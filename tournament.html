@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>FF Tournament Pro</title>
+<style>
+body {background:#0f172a;color:white;font-family:Arial;padding:20px;text-align:center;}
+input,button {width:90%;padding:10px;margin:6px;border-radius:8px;border:none;}
+button {background:#22c55e;color:white;}
+.box {background:#1e293b;padding:15px;margin-top:10px;border-radius:10px;}
+li {margin:5px;}
+</style>
+</head>
+
+<body>
+
+<h2>🔥 FF Tournament Pro</h2>
+
+<div class="box">
+<h3>Register</h3>
+<input id="name" placeholder="Name">
+<input id="uid" placeholder="UID">
+<input id="ign" placeholder="In-game Name">
+<button onclick="register()">Join</button>
+</div>
+
+<div class="box">
+<h3>Match Info</h3>
+<p id="match">Room: 123456 | Pass: 7890</p>
+</div>
+
+<div class="box">
+<h3>Players</h3>
+<ul id="list"></ul>
+</div>
+
+<div class="box">
+<h3>Leaderboard</h3>
+<ul id="leader"></ul>
+</div>
+
+<div class="box">
+<h3>Admin Panel 🔐</h3>
+<input id="pass" placeholder="Enter Admin Password">
+<button onclick="login()">Login</button>
+
+<div id="admin" style="display:none;">
+<input id="room" placeholder="New Room ID">
+<input id="pass2" placeholder="New Password">
+<button onclick="updateMatch()">Update Match</button>
+
+<input id="winner" placeholder="Winner Name">
+<button onclick="addWinner()">Add Winner</button>
+</div>
+</div>
+
+<script>
+
+// Load saved data
+window.onload = function(){
+  loadPlayers();
+  loadLeaders();
+}
+
+// Register player
+function register(){
+  let name = nameInput.value;
+  let ign = ignInput.value;
+
+  if(name=="" || ign==""){
+    alert("Fill all!");
+    return;
+  }
+
+  let players = JSON.parse(localStorage.getItem("players")||"[]");
+  players.push(name+" ("+ign+")");
+  localStorage.setItem("players", JSON.stringify(players));
+
+  loadPlayers();
+}
+
+// Load players
+function loadPlayers(){
+  let list = document.getElementById("list");
+  list.innerHTML="";
+  let players = JSON.parse(localStorage.getItem("players")||"[]");
+
+  players.forEach((p,i)=>{
+    let li = document.createElement("li");
+    li.innerHTML = p + ' <button onclick="del('+i+')">❌</button>';
+    list.appendChild(li);
+  });
+}
+
+// Delete player
+function del(i){
+  let players = JSON.parse(localStorage.getItem("players"));
+  players.splice(i,1);
+  localStorage.setItem("players", JSON.stringify(players));
+  loadPlayers();
+}
+
+// Admin login
+function login(){
+  if(document.getElementById("pass").value=="turjo123"){
+    document.getElementById("admin").style.display="block";
+  } else {
+    alert("Wrong password");
+  }
+}
+
+// Update match
+function updateMatch(){
+  let room = document.getElementById("room").value;
+  let pass = document.getElementById("pass2").value;
+
+  document.getElementById("match").innerText =
+    "Room: "+room+" | Pass: "+pass;
+}
+
+// Add winner
+function addWinner(){
+  let w = document.getElementById("winner").value;
+
+  let leaders = JSON.parse(localStorage.getItem("leaders")||"[]");
+  leaders.push(w);
+  localStorage.setItem("leaders", JSON.stringify(leaders));
+
+  loadLeaders();
+}
+
+// Load leaderboard
+function loadLeaders(){
+  let list = document.getElementById("leader");
+  list.innerHTML="";
+  let leaders = JSON.parse(localStorage.getItem("leaders")||"[]");
+
+  leaders.forEach(l=>{
+    let li = document.createElement("li");
+    li.textContent = l;
+    list.appendChild(li);
+  });
+}
+
+</script>
+
+</body>
+</html>
